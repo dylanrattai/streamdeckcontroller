@@ -19,6 +19,7 @@ resetTgt = false
 grid = None #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
 column = None #0 = leftmost column, 1 = middle column, 2 = rightmost column
 row = None #0 = lowest row, 1 = middle row, 2 = highest row
+selectedNode = [None, None] #use to hold pose in only columns and rows
 tgt = [None, None] #Column, Row
 
 def setTgtInts():
@@ -40,9 +41,18 @@ def setTgtInts():
     row = 1
   elif(row2):
     row = 2
+  selectedNode = [grid + column, row]
 
 def setTgt():
   try:
     tgt = [grid + column, row]
   except:
     return None
+
+def updateNetworktable():
+  #send target node to table
+  #send commands to networktable
+  
+while true:
+  updateNetworktable()
+  setTgtInts()
