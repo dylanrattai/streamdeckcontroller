@@ -1,7 +1,13 @@
 import os
 import threading
+import time
+
+from networktables import NetworkTables
+from ntcore import *
+from networktables.util import ntproperty
 
 from PIL import Image, ImageDraw, ImageFont
+import ntcore
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 
@@ -50,6 +56,9 @@ row = None #0 = lowest row, 1 = middle row, 2 = highest row
 rowTgt = None
 selectedNode = [None, None] #use to hold pose in only columns and rows
 tgt = [None, None] #Column, Row
+
+NetworkTables.initialize(server = "10.70.28.2")
+sd = NetworkTables.getTable("SmartDashboard")
 
 def setTgtInts():
     global grid
@@ -333,7 +342,6 @@ def get_key_style(deck, key, state):
         "label": label
     }
 
-
 # Creates a new key image based on the key index, style and current key state
 # and updates the image on the StreamDeck.
 def update_key_image(deck, key, state):
@@ -429,14 +437,19 @@ def key_change_callback(deck, key, state):
         elif key_style["name"] == "setTgt":
             setTgtInts()
             setTgtF()
-            #send tgt pose to networktables
+            #send tgt to networktables
 
         elif key_style["name"] == "removeTgt":
-            #send networktables no target
+            #set tgt to Null in networktables
             setOthersFalse("tgt")
 
         elif key_style["name"] == "fellLow":
             #mark low in same column as filled on shuffleboard
+            setOthersFalse("tgt")
+
+        elif key_style["name"] == "madeShot":
+            #set marked pose as filled on shuffleboard
+            #reset networktables tgt
             setOthersFalse("tgt")
 
         elif key_style["name"] == "markGrid":
@@ -452,7 +465,6 @@ def key_change_callback(deck, key, state):
         #update key images
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
-
 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
@@ -488,3 +500,6 @@ if __name__ == "__main__":
                 t.join()
             except RuntimeError:
                 pass
+        sd.putBoolean("Streamdeck Connected", True)
+else:
+    sd.putBoolean("Streamdeck Connected", False)
