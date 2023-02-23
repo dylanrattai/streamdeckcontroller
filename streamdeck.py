@@ -1,6 +1,5 @@
 import os
 import threading
-import time
 
 from networktables import NetworkTables
 from ntcore import *
@@ -11,7 +10,6 @@ import ntcore
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 
-# Folder location of image assets used by this example.
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
 #button bools
@@ -54,17 +52,20 @@ column = None #0 = leftmost column, 1 = middle column, 2 = rightmost column
 columnTgt = None
 row = None #0 = lowest row, 1 = middle row, 2 = highest row
 rowTgt = None
-selectedNode = [None, None] #use to hold pose in only columns and rows
-tgt = [None, None] #Column, Row
 
+#networktables setup
 NetworkTables.initialize(server = "10.70.28.2")
 sd = NetworkTables.getTable("SmartDashboard")
+
+#target vars for networktables
+class NTValues():
+    tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", None)
+    tgtRowNT = ntproperty("/SmartDashboard/TgtColumn", None)
 
 def setTgtInts():
     global grid
     global column
     global row
-    global selectedNode
 
     try:
         #set the grid num to an int that can be added w/ column to equal the column index 
@@ -89,9 +90,6 @@ def setTgtInts():
             row = 1
         elif(row2):
             row = 2
-
-        #set the selected node tot eh column and row indexes
-        selectedNode = [grid + column, row]
     except:
         print("Missing Value in setTgtInts")
 
@@ -105,7 +103,6 @@ def setTgtF():
         gridTgt = grid
         columnTgt = column
         rowTgt = row
-        tgt = [grid + column, row]
     except:
         print("Missing Value in setTgtInts (sent from setTgtF)")
 
@@ -210,7 +207,6 @@ def setOthersFalse(notFalseKey):
     global row0
     global row1
     global row2
-    global selectedNode
     global tgt
     global gridTgt
     global columnTgt
@@ -226,14 +222,12 @@ def setOthersFalse(notFalseKey):
         row0 = False
         row1 = False
         row2 = False
-        selectedNode = [None, None]
         print("all")
     elif notFalseKey == "tgt":
         print("tgt")
         gridTgt = None
         columnTgt = None
         rowTgt = None
-        tgt = [None, None]
     elif notFalseKey == "grid0":
         grid1 = False
         grid2 = False
@@ -437,29 +431,39 @@ def key_change_callback(deck, key, state):
         elif key_style["name"] == "setTgt":
             setTgtInts()
             setTgtF()
-            #send tgt to networktables
+            #NTValues.tgtColumnNT = gridTgt + columnTgt
+            #NTValues.tgtRowNT = rowTgt
+            sd.putNumber("tgtColumn", gridTgt + columnTgt)
+            sd.putNumber("tgtRow", rowTgt)
+            sd.putBoolean(str(columnTgt) + str(columnTgt), False)
 
         elif key_style["name"] == "removeTgt":
-            #set tgt to Null in networktables
             setOthersFalse("tgt")
+            #NTValues.tgtColumnNT = None
+            #NTValues.tgtRowNT = None
+            sd.putNumber("tgtColumn", None)
+            sd.putNumber("tgtRow", None)
 
         elif key_style["name"] == "fellLow":
-            #mark low in same column as filled on shuffleboard
+            sd.putBoolean(str(columnTgt) + str(0), True)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "madeShot":
-            #set marked pose as filled on shuffleboard
-            #reset networktables tgt
+            #NTValues.tgtColumnNT = None
+            #NTValues.tgtRowNT = None
+            sd.putNumber("tgtColumn", None)
+            sd.putNumber("tgtRow", None)
+            sd.putBoolean(str(columnTgt) + str(columnTgt), True)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "markGrid":
             setTgtInts()
-            #mark shuffleboard as occupied
+            sd.putBoolean(str(column) + str(row), True)
             setOthersFalse("all")
 
         elif key_style["name"] == "removeGridMark":
             setTgtInts()
-            #remove the mark on shuffleboard
+            sd.putBoolean(str(column) + str(row), None)
             setOthersFalse("all")
 
         #update key images

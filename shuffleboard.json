@@ -1,0 +1,304 @@
+{
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,2": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Left Outer Grid",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_title": "02",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_title": "12",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,0": {
+                  "_type": "Boolean Box",
+                  "_title": "22",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_title": "11",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_title": "01",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,1": {
+                  "_type": "Boolean Box",
+                  "_title": "21",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,2": {
+                  "_type": "Boolean Box",
+                  "_title": "20",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,2": {
+                  "_type": "Boolean Box",
+                  "_title": "10",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_title": "00",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          },
+          "7,2": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Community Grid",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_title": "32",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_title": "42",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,0": {
+                  "_type": "Boolean Box",
+                  "_title": "52",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,1": {
+                  "_type": "Boolean Box",
+                  "_title": "51",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_title": "31",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_title": "41",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,2": {
+                  "_type": "Boolean Box",
+                  "_title": "40",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,2": {
+                  "_type": "Boolean Box",
+                  "_title": "50",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_title": "30",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          },
+          "10,2": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Right Outer Grid",
+              "_glyph": 149,
+              "_showGlyph": false,
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "1,2": {
+                  "_type": "Boolean Box",
+                  "_title": "70",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,2": {
+                  "_type": "Boolean Box",
+                  "_title": "80",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_title": "71",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_title": "62",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_title": "72",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,0": {
+                  "_type": "Boolean Box",
+                  "_title": "82",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_title": "61",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_title": "60",
+                  "_glyph": 148,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "2,1": {
+                  "_type": "Boolean Box",
+                  "_title": "81",
+                  "_glyph": 0,
+                  "_showGlyph": false,
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 2576.0,
+    "height": 1408.0
+  }
+}
