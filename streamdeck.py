@@ -431,16 +431,16 @@ def key_change_callback(deck, key, state):
         elif key_style["name"] == "setTgt":
             setTgtInts()
             setTgtF()
-            #NTValues.tgtColumnNT = gridTgt + columnTgt
-            #NTValues.tgtRowNT = rowTgt
+            NTValues.tgtColumnNT = gridTgt + columnTgt
+            NTValues.tgtRowNT = rowTgt
             sd.putNumber("tgtColumn", gridTgt + columnTgt)
             sd.putNumber("tgtRow", rowTgt)
             sd.putBoolean(str(columnTgt) + str(columnTgt), False)
 
         elif key_style["name"] == "removeTgt":
             setOthersFalse("tgt")
-            #NTValues.tgtColumnNT = None
-            #NTValues.tgtRowNT = None
+            NTValues.tgtColumnNT = None
+            NTValues.tgtRowNT = None
             sd.putNumber("tgtColumn", None)
             sd.putNumber("tgtRow", None)
 
@@ -449,8 +449,8 @@ def key_change_callback(deck, key, state):
             setOthersFalse("tgt")
 
         elif key_style["name"] == "madeShot":
-            #NTValues.tgtColumnNT = None
-            #NTValues.tgtRowNT = None
+            NTValues.tgtColumnNT = None
+            NTValues.tgtRowNT = None
             sd.putNumber("tgtColumn", None)
             sd.putNumber("tgtRow", None)
             sd.putBoolean(str(columnTgt) + str(columnTgt), True)
