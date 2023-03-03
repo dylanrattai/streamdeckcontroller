@@ -59,8 +59,8 @@ sd = NetworkTables.getTable("SmartDashboard")
 
 #target vars for networktables
 class NTValues():
-    tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", None)
-    tgtRowNT = ntproperty("/SmartDashboard/TgtColumn", None)
+    tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
+    tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
 
 def setTgtInts():
     global grid
@@ -431,44 +431,47 @@ def key_change_callback(deck, key, state):
         elif key_style["name"] == "setTgt":
             setTgtInts()
             setTgtF()
-            NTValues.tgtColumnNT = gridTgt + columnTgt
-            NTValues.tgtRowNT = rowTgt
-            sd.putNumber("tgtColumn", gridTgt + columnTgt)
-            sd.putNumber("tgtRow", rowTgt)
-            sd.putBoolean(str(columnTgt) + str(columnTgt), False)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", gridTgt + columnTgt)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", rowTgt)
+            sd.putBoolean("TC" + str(columnTgt + gridTgt), True)
+            sd.putBoolean("TR" + str(rowTgt), True)
 
         elif key_style["name"] == "removeTgt":
             setOthersFalse("tgt")
-            NTValues.tgtColumnNT = None
-            NTValues.tgtRowNT = None
-            sd.putNumber("tgtColumn", None)
-            sd.putNumber("tgtRow", None)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
+            sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
+            sd.putBoolean("TR" + str(rowTgt), False)
 
         elif key_style["name"] == "fellLow":
-            sd.putBoolean(str(columnTgt) + str(0), True)
+            sd.putBoolean(str(columnTgt + gridTgt) + str(0), True)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "madeShot":
-            NTValues.tgtColumnNT = None
-            NTValues.tgtRowNT = None
-            sd.putNumber("tgtColumn", None)
-            sd.putNumber("tgtRow", None)
-            sd.putBoolean(str(columnTgt) + str(columnTgt), True)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
+            sd.putBoolean(str(columnTgt + gridTgt) + str(rowTgt), True)
+            sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
+            sd.putBoolean("TR" + str(rowTgt), False)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "markGrid":
             setTgtInts()
-            sd.putBoolean(str(column) + str(row), True)
+            sd.putBoolean(str(column + grid) + str(row), True)
             setOthersFalse("all")
 
         elif key_style["name"] == "removeGridMark":
             setTgtInts()
-            sd.putBoolean(str(column) + str(row), None)
+            sd.putBoolean(str(column + grid) + str(row), False)
             setOthersFalse("all")
 
         #update key images
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
+
+def setupSD():
+    #MAKE ALL THE BOOLS
+    print("Placeholder")
 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
