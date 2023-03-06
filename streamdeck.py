@@ -10,35 +10,6 @@ from StreamDeck.ImageHelpers import PILHelper
 
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
-#button bools
-grid0 = False
-grid1 = False
-grid2 = False
-column0Low = False
-column0Mid = False
-column0Top = False
-column1 = False
-column1 = False
-column1 = False
-column2 = False
-column2 = False
-column2 = False
-
-#set key indexes
-grid0Index = 3
-grid1Index = 8
-grid2Index = 13
-column0LowIndex = 0
-column0MidIndex = 5
-column0TopIndex = 10
-column1LowIndex = 1
-column1MidIndex = 6
-column1TopIndex = 11
-column2Index = 2
-column2Index = 7
-column2Index = 12
-toggleExitIndex = 4
-
 #targeting ints (perspective in comments = looking at grid from field NOT DRIVER STATION)
 grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
 gridTgt = 0
@@ -59,44 +30,34 @@ class NTValues():
     tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 0)
     tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 0)
 
-def setTgtInts():
-    global grid
-    global column
-    global row
+class Buttons():
+    grid0 = False
+    grid1 = False
+    grid2 = False
+    column0Low = False
+    column0Mid = False
+    column0Top = False
+    column1Low = False
+    column1Mid = False
+    column1Top = False
+    column2Low = False
+    column2Mid = False
+    column2Top = False
 
-    try:
-        #set the grid num to an int that can be added w/ column to equal the column index 
-        #for the total of all grids
-        if(grid0):
-            grid = 0
-        elif(grid1):
-            grid = 3
-        elif(grid2):
-            grid = 6
-
-        if(column0Low or column0Mid or column0Top):
-            column = 0
-        elif(column1Low or column1Mid or column1Top):
-            column = 1
-        elif(column2Low or column2Mid or column2Top):
-            column = 2
-
-        if 
-    except:
-        print("Missing Value in setTgtInts")
-
-def setTgtF():
-    global tgt
-    global gridTgt
-    global columnTgt
-    global rowTgt
-
-    try:
-        gridTgt = grid
-        columnTgt = column
-        rowTgt = row
-    except:
-        print("Missing Value in setTgtInts (sent from setTgtF)")
+class Indexes():
+    grid0Index = 3
+    grid1Index = 8
+    grid2Index = 13
+    column0LowIndex = 0
+    column0MidIndex = 5
+    column0TopIndex = 10
+    column1LowIndex = 1
+    column1MidIndex = 6
+    column1TopIndex = 11
+    column2Index = 2
+    column2Index = 7
+    column2Index = 12
+    toggleExitIndex = 4
 
 def setImgs(icon):
     if icon == "grid0":
@@ -104,63 +65,6 @@ def setImgs(icon):
             return "grid1Tgt"
         else:
             return "grid1"
-
-def setOthersFalse(notFalseKey):
-    global grid0
-    global grid1
-    global grid2
-    global column0
-    global column1
-    global column2
-    global row0
-    global row1
-    global row2
-    global tgt
-    global gridTgt
-    global columnTgt
-    global rowTgt
-
-    if notFalseKey == "all":
-        grid0 = False
-        grid1 = False
-        grid2 = False
-        column0 = False
-        column1 = False
-        column2 = False
-        row0 = False
-        row1 = False
-        row2 = False
-    elif notFalseKey == "tgt":
-        gridTgt = None
-        columnTgt = None
-        rowTgt = None
-    elif notFalseKey == "grid0":
-        grid1 = False
-        grid2 = False
-    elif notFalseKey == "grid1":
-        grid0 = False
-        grid2 = False
-    elif notFalseKey == "grid2":
-        grid0 = False
-        grid1 = False
-    elif notFalseKey == "column0":
-        column1 = False
-        column2 = False
-    elif notFalseKey == "column1":
-        column0 = False
-        column2 = False
-    elif notFalseKey == "column2":
-        column0 = False
-        column1 = False
-    elif notFalseKey == "row0":
-        row1 = False
-        row2 = False
-    elif notFalseKey == "row1":
-        row0 = False
-        row2 = False
-    elif notFalseKey == "row2":
-        row0 = False
-        row1 = False
 
 # Generates a custom tile with run-time generated text and custom image via the
 # PIL module.
@@ -186,48 +90,6 @@ def get_key_style(deck, key, state):
     if key == grid0Index:
         name = "grid0"
         icon = "{}.png".format(setImgs("grid0"))
-    elif key == grid1Index:
-        name = "grid1"
-        icon = "{}.png".format(setImgs("grid1"))
-    elif key == grid2Index:
-        name = "grid2"
-        icon = "{}.png".format(setImgs("grid2"))
-    elif key == column0Index:
-        name = "column0"
-        icon = "{}.png".format(setImgs("column0"))
-    elif key == column1Index:
-        name = "column1"
-        icon = "{}.png".format(setImgs("column1"))
-    elif key == column2Index:
-        name = "column2"
-        icon = "{}.png".format(setImgs("column2"))
-    elif key == row0Index:
-        name = "row0"
-        icon = "{}.png".format(setImgs("row0"))
-    elif key == row1Index:
-        name = "row1"
-        icon = "{}.png".format(setImgs("row1"))
-    elif key == row2Index:
-        name = "row2"
-        icon = "{}.png".format(setImgs("row2"))
-    elif key == setTgtIndex:
-        name = "setTgt"
-        icon = "{}.png".format("target")
-    elif key == markToggleIndex:
-        name = "markGrid"
-        icon = "{}.png".format("conecube")
-    elif key == removeMarkIndex:
-        name = "removeGridMark"
-        icon = "{}.png".format("xconecube")
-    elif key == removeTgtIndex:
-        name = "removeTgt"
-        icon = "{}.png".format("miss")
-    elif key == madeShotIndex:
-        name = "madeShot"
-        icon = "{}.png".format("check")
-    elif key == fellLowIndex:
-        name = "fellLow"
-        icon = "{}.png".format("felllow")
     else:
         name = "empty"
         icon = "{}.png".format("empty")
@@ -261,20 +123,6 @@ def update_key_image(deck, key, state):
 # Prints key state change information, updates rhe key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
-    global grid0
-    global grid1
-    global grid2
-    global column0
-    global column1
-    global column2
-    global row0
-    global row1
-    global row2
-    global setTgt 
-    global markGrid 
-    global toggleMark
-    global fellLow 
-    global resetTgt 
 
     # Print new key state
     print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
@@ -300,38 +148,6 @@ def key_change_callback(deck, key, state):
         #all the buttons toggle bool values
         elif key_style["name"] == "grid0":
             grid0 = not grid0
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "grid1":
-            grid1 = not grid1
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "grid2":
-            grid2 = not grid2
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "column0":
-            column0 = not column0
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "column1":
-            column1 = not column1
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "column2":
-            column2 = not column2
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "row0":
-            row0 = not row0
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "row1":
-            row1 = not row1
-            setOthersFalse(key_style["name"])
-
-        elif key_style["name"] == "row2":
-            row2 = not row2
             setOthersFalse(key_style["name"])
 
         elif key_style["name"] == "setTgt":
@@ -360,16 +176,6 @@ def key_change_callback(deck, key, state):
             sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
             sd.putBoolean("TR" + str(rowTgt), False)
             setOthersFalse("tgt")
-
-        elif key_style["name"] == "markGrid":
-            setTgtInts()
-            sd.putBoolean(str(column + grid) + str(row), True)
-            setOthersFalse("all")
-
-        elif key_style["name"] == "removeGridMark":
-            setTgtInts()
-            sd.putBoolean(str(column + grid) + str(row), False)
-            setOthersFalse("all")
 
         #update key images
         for key in range(deck.key_count()):
@@ -413,6 +219,3 @@ if __name__ == "__main__":
                 t.join()
             except RuntimeError:
                 pass
-        sd.putBoolean("Streamdeck Connected", True)
-else:
-    sd.putBoolean("Streamdeck Connected", False)
