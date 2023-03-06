@@ -59,8 +59,8 @@ sd = NetworkTables.getTable("SmartDashboard")
 
 #target vars for networktables
 class NTValues():
-    tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
-    tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
+    tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 0)
+    tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 0)
 
 def setTgtInts():
     global grid
@@ -431,15 +431,15 @@ def key_change_callback(deck, key, state):
         elif key_style["name"] == "setTgt":
             setTgtInts()
             setTgtF()
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", gridTgt + columnTgt)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", rowTgt)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", gridTgt + columnTgt)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", rowTgt)
             sd.putBoolean("TC" + str(columnTgt + gridTgt), True)
             sd.putBoolean("TR" + str(rowTgt), True)
 
         elif key_style["name"] == "removeTgt":
             setOthersFalse("tgt")
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
             sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
             sd.putBoolean("TR" + str(rowTgt), False)
 
@@ -448,8 +448,8 @@ def key_change_callback(deck, key, state):
             setOthersFalse("tgt")
 
         elif key_style["name"] == "madeShot":
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/TgtColumn", 999)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/TgtRow", 999)
+            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
+            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
             sd.putBoolean(str(columnTgt + gridTgt) + str(rowTgt), True)
             sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
             sd.putBoolean("TR" + str(rowTgt), False)
