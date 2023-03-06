@@ -1,12 +1,10 @@
 import os
 import threading
-
+import ntcore
 from networktables import NetworkTables
 from ntcore import *
 from networktables.util import ntproperty
-
 from PIL import Image, ImageDraw, ImageFont
-import ntcore
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 
@@ -16,42 +14,41 @@ ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 grid0 = False
 grid1 = False
 grid2 = False
-column0 = False
+column0Low = False
+column0Mid = False
+column0Top = False
+column1 = False
+column1 = False
 column1 = False
 column2 = False
-row0 = False
-row1 = False
-row2 = False
-setTgt = False
-markGrid = False
-toggleMark = False
-fellLow = False
-resetTgt = False
+column2 = False
+column2 = False
 
 #set key indexes
-grid0Index = 0
-grid1Index = 5
-grid2Index = 10
-column0Index = 1
-column1Index = 6
-column2Index = 11
-row0Index = 12
-row1Index = 7
-row2Index = 2
-setTgtIndex = 3
-markToggleIndex = 13
-removeTgtIndex = 8
-madeShotIndex = 4
-fellLowIndex = 9
-removeMarkIndex = 14
+grid0Index = 3
+grid1Index = 8
+grid2Index = 13
+column0LowIndex = 0
+column0MidIndex = 5
+column0TopIndex = 10
+column1LowIndex = 1
+column1MidIndex = 6
+column1TopIndex = 11
+column2Index = 2
+column2Index = 7
+column2Index = 12
+toggleExitIndex = 4
 
 #targeting ints (perspective in comments = looking at grid from field NOT DRIVER STATION)
-grid = None #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
-gridTgt = None
-column = None #0 = leftmost column, 1 = middle column, 2 = rightmost column
-columnTgt = None
-row = None #0 = lowest row, 1 = middle row, 2 = highest row
-rowTgt = None
+grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
+gridTgt = 0
+column = 0 #0 = leftmost column, 1 = middle column, 2 = rightmost column
+columnTgt = 0
+row = 0 #0 = lowest row, 1 = middle row, 2 = highest row
+rowTgt = 0
+
+tmpVar1 = None
+tmpVar2 = None
 
 #networktables setup
 NetworkTables.initialize(server = "10.70.28.2")
@@ -76,20 +73,15 @@ def setTgtInts():
             grid = 3
         elif(grid2):
             grid = 6
-        #set the column num to the one selected
-        if(column0):
+
+        if(column0Low or column0Mid or column0Top):
             column = 0
-        elif(column1):
+        elif(column1Low or column1Mid or column1Top):
             column = 1
-        elif(column2):
+        elif(column2Low or column2Mid or column2Top):
             column = 2
-        #set the row num to the one selected
-        if(row0):
-            row = 0
-        elif(row1):
-            row = 1
-        elif(row2):
-            row = 2
+
+        if 
     except:
         print("Missing Value in setTgtInts")
 
@@ -108,94 +100,10 @@ def setTgtF():
 
 def setImgs(icon):
     if icon == "grid0":
-        if grid0 and gridTgt == 0:
-            return "grid1TgtMrk"
-        elif grid0 and gridTgt != 0:
-            return "grid1Mrk"
-        elif grid0 != True and gridTgt == 0:
+        if grid0 != True and gridTgt == 0:
             return "grid1Tgt"
         else:
             return "grid1"
-            
-    elif icon == "grid1":
-        if grid1 and gridTgt == 3:
-            return "grid2TgtMrk"
-        elif grid1 and gridTgt != 3:
-            return "grid2Mrk"
-        elif grid1 != True and gridTgt == 3:
-            return "grid2Tgt"
-        else:
-            return "grid2"
-            
-    elif icon == "grid2":
-        if grid2 and gridTgt == 6:
-            return "grid3TgtMrk"
-        elif grid2 and gridTgt != 6:
-            return "grid3Mrk"
-        elif grid2 != True and gridTgt == 6:
-            return "grid3Tgt"
-        else:
-            return "grid3"
-            
-    elif icon == "column0":
-        if column0 and columnTgt == 0:
-            return "column1TgtMrk"
-        elif column0 and columnTgt != 0:
-            return "column1Mrk"
-        elif column0 != True and columnTgt == 0:
-            return "column1Tgt"
-        else:
-            return "column1"
-            
-    elif icon == "column1":
-        if column1 and columnTgt == 1:
-            return "column2TgtMrk"
-        elif column1 and columnTgt != 1:
-            return "column2Mrk"
-        elif column1 != True and columnTgt == 1:
-            return "column2Tgt"
-        else:
-            return "column2"
-            
-    elif icon == "column2":
-        if column2 and columnTgt == 2:
-            return "column3TgtMrk"
-        elif column2 and columnTgt != 2:
-            return "column3Mrk"
-        elif column2 != True and columnTgt == 2:
-            return "column3Tgt"
-        else:
-            return "column3"
-            
-    elif icon == "row0":
-        if row0 and rowTgt == 0:
-            return "row1TgtMrk"
-        elif row0 and rowTgt != 0:
-            return "row1Mrk"
-        elif row0 != True and rowTgt == 0:
-            return "row1Tgt"
-        else:
-            return "row1"
-            
-    elif icon == "row1":
-        if row1 and rowTgt == 1:
-            return "row2TgtMrk"
-        elif row1 and rowTgt != 1:
-            return "row2Mrk"
-        elif row1 != True and rowTgt == 1:
-            return "row2Tgt"
-        else:
-            return "row2"
-            
-    elif icon == "row2":
-        if row2 and rowTgt == 2:
-            return "row3TgtMrk"
-        elif row2 and rowTgt != 2:
-            return "row3Mrk"
-        elif row2 != True and rowTgt == 2:
-            return "row3Tgt"
-        else:
-            return "row3"
 
 def setOthersFalse(notFalseKey):
     global grid0
@@ -222,9 +130,7 @@ def setOthersFalse(notFalseKey):
         row0 = False
         row1 = False
         row2 = False
-        print("all")
     elif notFalseKey == "tgt":
-        print("tgt")
         gridTgt = None
         columnTgt = None
         rowTgt = None
