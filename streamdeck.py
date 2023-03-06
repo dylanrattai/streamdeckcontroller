@@ -10,17 +10,6 @@ from StreamDeck.ImageHelpers import PILHelper
 
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
-#targeting ints (perspective in comments = looking at grid from field NOT DRIVER STATION)
-grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
-gridTgt = 0
-column = 0 #0 = leftmost column, 1 = middle column, 2 = rightmost column
-columnTgt = 0
-row = 0 #0 = lowest row, 1 = middle row, 2 = highest row
-rowTgt = 0
-
-tmpVar1 = None
-tmpVar2 = None
-
 #networktables setup
 NetworkTables.initialize(server = "10.70.28.2")
 sd = NetworkTables.getTable("SmartDashboard")
@@ -59,12 +48,49 @@ class Indexes():
     column2Index = 12
     toggleExitIndex = 4
 
+class Tgt():
+    grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
+    column = 0 #0 = leftmost column, 1 = middle column, 2 = rightmost column
+    row = 0 #0 = lowest row, 1 = middle row, 2 = highest row
+
 def setImgs(icon):
+    #set the images to the target image if selected
+    
     if icon == "grid0":
-        if grid0 != True and gridTgt == 0:
+        if Buttons.grid0 == True:
             return "grid1Tgt"
         else:
             return "grid1"
+            
+    elif icon == "grid1":
+        if Buttons.grid1 == True:
+            return "grid2Tgt"
+        else:
+            return "grid2"
+            
+    elif icon == "grid2":
+        if Buttons.grid2 == True:
+            return "grid3Tgt"
+        else:
+            return "grid3"
+            
+    elif icon == "column0Low":
+        if Buttons.column0Low == True:
+            return "grid3Tgt"
+        else:
+            return "grid3"
+            
+    elif icon == "grid2":
+        if Buttons.grid2 == True and Tgt.grid == 6:
+            return "grid3Tgt"
+        else:
+            return "grid3"
+            
+    elif icon == "grid2":
+        if Buttons.grid2 == True and Tgt.grid == 6:
+            return "grid3Tgt"
+        else:
+            return "grid3"
 
 # Generates a custom tile with run-time generated text and custom image via the
 # PIL module.
