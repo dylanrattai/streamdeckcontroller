@@ -54,8 +54,7 @@ row = None #0 = lowest row, 1 = middle row, 2 = highest row
 rowTgt = None
 
 #networktables setup
-NetworkTables.initialize(server = "10.70.28.2")
-sd = NetworkTables.getTable("SmartDashboard")
+NetworkTables.initialize(server = "10.70.28.2") #set this to your RIO's IP
 
 #target vars for networktables
 class NTValues():
@@ -433,36 +432,26 @@ def key_change_callback(deck, key, state):
             setTgtF()
             NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", gridTgt + columnTgt)
             NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", rowTgt)
-            sd.putBoolean("TC" + str(columnTgt + gridTgt), True)
-            sd.putBoolean("TR" + str(rowTgt), True)
 
         elif key_style["name"] == "removeTgt":
             setOthersFalse("tgt")
             NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
             NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
-            sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
-            sd.putBoolean("TR" + str(rowTgt), False)
 
         elif key_style["name"] == "fellLow":
-            sd.putBoolean(str(columnTgt + gridTgt) + str(0), True)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "madeShot":
             NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
             NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
-            sd.putBoolean(str(columnTgt + gridTgt) + str(rowTgt), True)
-            sd.putBoolean("TC" + str(columnTgt + gridTgt), False)
-            sd.putBoolean("TR" + str(rowTgt), False)
             setOthersFalse("tgt")
 
         elif key_style["name"] == "markGrid":
             setTgtInts()
-            sd.putBoolean(str(column + grid) + str(row), True)
             setOthersFalse("all")
 
         elif key_style["name"] == "removeGridMark":
             setTgtInts()
-            sd.putBoolean(str(column + grid) + str(row), False)
             setOthersFalse("all")
 
         #update key images
@@ -507,6 +496,3 @@ if __name__ == "__main__":
                 t.join()
             except RuntimeError:
                 pass
-        sd.putBoolean("Streamdeck Connected", True)
-else:
-    sd.putBoolean("Streamdeck Connected", False)
