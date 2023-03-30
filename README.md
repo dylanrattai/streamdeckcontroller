@@ -8,3 +8,6 @@ PIP Modules
 
 Program (Needed for HID Interfacing)
 - [HIDAPI](https://github.com/libusb/hidapi)
+
+Uses
+- [Python Streamdeck by Dean Camera] (https://github.com/abcminiuser/python-elgato-streamdeck)
