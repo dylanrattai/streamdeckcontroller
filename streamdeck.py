@@ -1,259 +1,164 @@
 import os
 import threading
-
 from networktables import NetworkTables
 from ntcore import *
 from networktables.util import ntproperty
-
 from PIL import Image, ImageDraw, ImageFont
-import ntcore
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
 
+#button images path
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
-#button bools
-grid0 = False
-grid1 = False
-grid2 = False
-column0 = False
-column1 = False
-column2 = False
-row0 = False
-row1 = False
-row2 = False
-setTgt = False
-markGrid = False
-toggleMark = False
-fellLow = False
-resetTgt = False
+#networktables startup
+NetworkTables.initialize(server = "10.70.28.2")
 
-#set key indexes
-grid0Index = 0
-grid1Index = 5
-grid2Index = 10
-column0Index = 1
-column1Index = 6
-column2Index = 11
-row0Index = 12
-row1Index = 7
-row2Index = 2
-setTgtIndex = 3
-markToggleIndex = 13
-removeTgtIndex = 8
-madeShotIndex = 4
-fellLowIndex = 9
-removeMarkIndex = 14
-
-#targeting ints (perspective in comments = looking at grid from field NOT DRIVER STATION)
-grid = None #0 = left outer grid, 3 = co-op grid, 6 = right outer grid
-gridTgt = None
-column = None #0 = leftmost column, 1 = middle column, 2 = rightmost column
-columnTgt = None
-row = None #0 = lowest row, 1 = middle row, 2 = highest row
-rowTgt = None
-
-#networktables setup
-NetworkTables.initialize(server = "10.70.28.2") #set this to your RIO's IP
-
-#target vars for networktables
+#target location ints for networktables
 class NTValues():
-    tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 0)
-    tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 0)
+    tgtColumn = ntproperty("/Target/Column", 0)
+    tgtRow = ntproperty("/Target/Row", 0)
 
-def setTgtInts():
-    global grid
-    global column
-    global row
+class Buttons():
+    g0 = False #grid 0 
+    g1 = False #grid 1
+    g2 = False #grid 2
+    c0l = False # column 0 low
+    c0m = False # column 0 mid
+    c0t = False # column 0 top
+    c1l = False # column 1 low
+    c1m = False # column 1 mid
+    c1t = False # column 1 top
+    c2l = False # column 2 low
+    c2m = False # column 2 mid
+    c2t = False # column 2 top
 
-    try:
-        #set the grid num to an int that can be added w/ column to equal the column index 
-        #for the total of all grids
-        if(grid0):
-            grid = 0
-        elif(grid1):
-            grid = 3
-        elif(grid2):
-            grid = 6
-        #set the column num to the one selected
-        if(column0):
-            column = 0
-        elif(column1):
-            column = 1
-        elif(column2):
-            column = 2
-        #set the row num to the one selected
-        if(row0):
-            row = 0
-        elif(row1):
-            row = 1
-        elif(row2):
-            row = 2
-    except:
-        print("Missing Value in setTgtInts")
+#indexes for all of the buttons
+class Indexes():
+    #empty indexes: 1, 6, 11
 
-def setTgtF():
-    global tgt
-    global gridTgt
-    global columnTgt
-    global rowTgt
+    g0 = 0 #grid 0
+    g1 = 5 #grid 1
+    g2 = 10 #grid 2
+    c0t = 4 # column 0 top
+    c1t = 9 # column 1 top
+    c2t = 14 # column 2 top
+    c0m = 3 # column 0 mid
+    c1m = 8 # column 1 mid
+    c2m = 13 # column 2 mid
+    c0l = 2 # column 0 low
+    c1l = 7 # column 1 low
+    c2l = 12 # column 2 low
 
-    try:
-        gridTgt = grid
-        columnTgt = column
-        rowTgt = row
-    except:
-        print("Missing Value in setTgtInts (sent from setTgtF)")
+class TargetValues():
+    grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid (driver pov), added onto tgt column to get final column pose
+    column = 0 #0 = leftmost column, 1 = middle column, 2 = rightmost column (driver pov)
+    row = 0 #2 = lowest row, 1 = middle row, 0 = highest row (field pov)
 
+#update networktables values
+def updateNT():
+    NTValues.tgtColumn = ntproperty("/Target/Column", (TargetValues.grid + TargetValues.column))
+    NTValues.tgtRow = ntproperty("/Target/Row", TargetValues.row)
+
+def getColumnValue(pose):
+    if pose == "column0Top" or "column0Mid" or "column0Low":
+        return 0
+    elif pose == "column1Top" or "column1Mid" or "column1Low":
+        return 1
+    elif pose == "column2Top" or "column2Mid" or "column2Low":
+        return 2
+    else:
+        print("Invalid pose value in getColumnValue.")
+        return 0
+    
+def resetBools(erase):
+    if erase == "9x9":
+        Indexes.c0l = False
+        Indexes.c0m = False
+        Indexes.c0t = False
+        Indexes.c1l = False
+        Indexes.c1m = False
+        Indexes.c1t = False
+        Indexes.c2l = False
+        Indexes.c2m = False
+        Indexes.c2t = False
+    elif erase == "grid":
+        Indexes.g0 = False
+        Indexes.g1 = False
+        Indexes.g2 = False
+
+#return needed button image based on key and state
 def setImgs(icon):
     if icon == "grid0":
-        if grid0 and gridTgt == 0:
-            return "grid1TgtMrk"
-        elif grid0 and gridTgt != 0:
-            return "grid1Mrk"
-        elif grid0 != True and gridTgt == 0:
+        if Buttons.g0:
             return "grid1Tgt"
         else:
             return "grid1"
             
     elif icon == "grid1":
-        if grid1 and gridTgt == 3:
-            return "grid2TgtMrk"
-        elif grid1 and gridTgt != 3:
-            return "grid2Mrk"
-        elif grid1 != True and gridTgt == 3:
+        if Buttons.g1:
             return "grid2Tgt"
         else:
             return "grid2"
             
     elif icon == "grid2":
-        if grid2 and gridTgt == 6:
-            return "grid3TgtMrk"
-        elif grid2 and gridTgt != 6:
-            return "grid3Mrk"
-        elif grid2 != True and gridTgt == 6:
+        if Buttons.g2:
             return "grid3Tgt"
         else:
             return "grid3"
             
-    elif icon == "column0":
-        if column0 and columnTgt == 0:
-            return "column1TgtMrk"
-        elif column0 and columnTgt != 0:
-            return "column1Mrk"
-        elif column0 != True and columnTgt == 0:
+    elif icon == "column0Low":
+        if Buttons.c0l:
             return "column1Tgt"
         else:
             return "column1"
             
-    elif icon == "column1":
-        if column1 and columnTgt == 1:
-            return "column2TgtMrk"
-        elif column1 and columnTgt != 1:
-            return "column2Mrk"
-        elif column1 != True and columnTgt == 1:
+    elif icon == "column1Low":
+        if Buttons.c1l:
             return "column2Tgt"
         else:
             return "column2"
             
-    elif icon == "column2":
-        if column2 and columnTgt == 2:
-            return "column3TgtMrk"
-        elif column2 and columnTgt != 2:
-            return "column3Mrk"
-        elif column2 != True and columnTgt == 2:
+    elif icon == "column2Low":
+        if Buttons.c2l:
             return "column3Tgt"
         else:
             return "column3"
             
-    elif icon == "row0":
-        if row0 and rowTgt == 0:
-            return "row1TgtMrk"
-        elif row0 and rowTgt != 0:
-            return "row1Mrk"
-        elif row0 != True and rowTgt == 0:
-            return "row1Tgt"
+    elif icon == "column0Mid":
+        if Buttons.c0m:
+            return "column1Tgt"
         else:
-            return "row1"
+            return "column1"
             
-    elif icon == "row1":
-        if row1 and rowTgt == 1:
-            return "row2TgtMrk"
-        elif row1 and rowTgt != 1:
-            return "row2Mrk"
-        elif row1 != True and rowTgt == 1:
-            return "row2Tgt"
+    elif icon == "column1Mid":
+        if Buttons.c1m:
+            return "column2Tgt"
         else:
-            return "row2"
+            return "column2"
             
-    elif icon == "row2":
-        if row2 and rowTgt == 2:
-            return "row3TgtMrk"
-        elif row2 and rowTgt != 2:
-            return "row3Mrk"
-        elif row2 != True and rowTgt == 2:
-            return "row3Tgt"
+    elif icon == "column2Low":
+        if Buttons.c2m:
+            return "column3Tgt"
         else:
-            return "row3"
-
-def setOthersFalse(notFalseKey):
-    global grid0
-    global grid1
-    global grid2
-    global column0
-    global column1
-    global column2
-    global row0
-    global row1
-    global row2
-    global tgt
-    global gridTgt
-    global columnTgt
-    global rowTgt
-
-    if notFalseKey == "all":
-        grid0 = False
-        grid1 = False
-        grid2 = False
-        column0 = False
-        column1 = False
-        column2 = False
-        row0 = False
-        row1 = False
-        row2 = False
-        print("all")
-    elif notFalseKey == "tgt":
-        print("tgt")
-        gridTgt = None
-        columnTgt = None
-        rowTgt = None
-    elif notFalseKey == "grid0":
-        grid1 = False
-        grid2 = False
-    elif notFalseKey == "grid1":
-        grid0 = False
-        grid2 = False
-    elif notFalseKey == "grid2":
-        grid0 = False
-        grid1 = False
-    elif notFalseKey == "column0":
-        column1 = False
-        column2 = False
-    elif notFalseKey == "column1":
-        column0 = False
-        column2 = False
-    elif notFalseKey == "column2":
-        column0 = False
-        column1 = False
-    elif notFalseKey == "row0":
-        row1 = False
-        row2 = False
-    elif notFalseKey == "row1":
-        row0 = False
-        row2 = False
-    elif notFalseKey == "row2":
-        row0 = False
-        row1 = False
+            return "column3"
+            
+    elif icon == "column0Top":
+        if Buttons.c0t:
+            return "column1Tgt"
+        else:
+            return "column1"
+            
+    elif icon == "column1Top":
+        if Buttons.c1t:
+            return "column2Tgt"
+        else:
+            return "column2"
+            
+    elif icon == "column2Top":
+        if Buttons.c2t:
+            return "column3Tgt"
+        else:
+            return "column3"
 
 # Generates a custom tile with run-time generated text and custom image via the
 # PIL module.
@@ -276,55 +181,60 @@ def render_key_image(deck, icon_filename, font_filename, label_text):
 # Returns styling information for a key based on its position and state.
 def get_key_style(deck, key, state):
 
-    if key == grid0Index:
+    if key == Indexes.g0:
         name = "grid0"
-        icon = "{}.png".format(setImgs("grid0"))
-    elif key == grid1Index:
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.g1:
         name = "grid1"
-        icon = "{}.png".format(setImgs("grid1"))
-    elif key == grid2Index:
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.g2:
         name = "grid2"
-        icon = "{}.png".format(setImgs("grid2"))
-    elif key == column0Index:
-        name = "column0"
-        icon = "{}.png".format(setImgs("column0"))
-    elif key == column1Index:
-        name = "column1"
-        icon = "{}.png".format(setImgs("column1"))
-    elif key == column2Index:
-        name = "column2"
-        icon = "{}.png".format(setImgs("column2"))
-    elif key == row0Index:
-        name = "row0"
-        icon = "{}.png".format(setImgs("row0"))
-    elif key == row1Index:
-        name = "row1"
-        icon = "{}.png".format(setImgs("row1"))
-    elif key == row2Index:
-        name = "row2"
-        icon = "{}.png".format(setImgs("row2"))
-    elif key == setTgtIndex:
-        name = "setTgt"
-        icon = "{}.png".format("target")
-    elif key == markToggleIndex:
-        name = "markGrid"
-        icon = "{}.png".format("conecube")
-    elif key == removeMarkIndex:
-        name = "removeGridMark"
-        icon = "{}.png".format("xconecube")
-    elif key == removeTgtIndex:
-        name = "removeTgt"
-        icon = "{}.png".format("miss")
-    elif key == madeShotIndex:
-        name = "madeShot"
-        icon = "{}.png".format("check")
-    elif key == fellLowIndex:
-        name = "fellLow"
-        icon = "{}.png".format("felllow")
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c0l:
+        name = "column0Low"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c1l:
+        name = "column1Low"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c2l:
+        name = "column2Low"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c0m:
+        name = "column0Mid"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c1m:
+        name = "column1Mid"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c2m:
+        name = "column2Mid"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c0t:
+        name = "column0Top"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c1t:
+        name = "column1Top"
+        icon = "{}.png".format(setImgs(name))
+
+    elif key == Indexes.c2t:
+        name = "column2Top"
+        icon = "{}.png".format(setImgs(name))
+
     else:
+        #any indexes not set will set the image as a blank png
         name = "empty"
         icon = "{}.png".format("empty")
 
+    #set the test to empty
     font = "Roboto-Regular.ttf"
     label = ""
 
@@ -354,20 +264,6 @@ def update_key_image(deck, key, state):
 # Prints key state change information, updates rhe key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
-    global grid0
-    global grid1
-    global grid2
-    global column0
-    global column1
-    global column2
-    global row0
-    global row1
-    global row2
-    global setTgt 
-    global markGrid 
-    global toggleMark
-    global fellLow 
-    global resetTgt 
 
     # Print new key state
     print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
@@ -375,93 +271,87 @@ def key_change_callback(deck, key, state):
     # Update the key image based on the new key state.
     update_key_image(deck, key, state)
 
-    # Check if the key is changing to the pressed state.
+    #if any of the keys have been pressed
     if state:
         key_style = get_key_style(deck, key, state)
 
-        # When an exit button is pressed, close the application. NOT IN USE
-        if key_style["name"] == "exit":
-            # Use a scoped-with on the deck to ensure we're the only thread
-            # using it right now.
-            with deck:
-                # Reset deck, clearing all button images.
-                deck.reset()
-
-                # Close deck handle, terminating internal worker threads.
-                deck.close()
-                
         #all the buttons toggle bool values
-        elif key_style["name"] == "grid0":
-            grid0 = not grid0
-            setOthersFalse(key_style["name"])
+        if key_style["name"] == "grid0":
+            resetBools("grid")
+            Buttons.g0 = True
+            TargetValues.grid = 0
 
         elif key_style["name"] == "grid1":
-            grid1 = not grid1
-            setOthersFalse(key_style["name"])
+            resetBools("grid")
+            Buttons.g1 = True
+            TargetValues.grid = 3
 
         elif key_style["name"] == "grid2":
-            grid2 = not grid2
-            setOthersFalse(key_style["name"])
+            resetBools("grid")
+            Buttons.g2 = True
+            TargetValues.grid = 6
 
-        elif key_style["name"] == "column0":
-            column0 = not column0
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column0Low":
+            resetBools("9x9")
+            Buttons.c0l = True
+            TargetValues.column = 0
+            TargetValues.row = 2
 
-        elif key_style["name"] == "column1":
-            column1 = not column1
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column1Low":
+            resetBools("9x9")
+            Buttons.c1l = True
+            TargetValues.column = 1
+            TargetValues.row = 2
 
-        elif key_style["name"] == "column2":
-            column2 = not column2
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column2Low":
+            resetBools("9x9")
+            Buttons.c2l = True
+            TargetValues.column = 2
+            TargetValues.row = 2
 
-        elif key_style["name"] == "row0":
-            row0 = not row0
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column0Mid":
+            resetBools("9x9")
+            Buttons.c0m = True
+            TargetValues.column = 0
+            TargetValues.row = 1
 
-        elif key_style["name"] == "row1":
-            row1 = not row1
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column1Mid":
+            resetBools("9x9")
+            Buttons.c1m = True
+            TargetValues.column = 1
+            TargetValues.row = 1
 
-        elif key_style["name"] == "row2":
-            row2 = not row2
-            setOthersFalse(key_style["name"])
+        elif key_style["name"] == "column2Mid":
+            resetBools("9x9")
+            Buttons.c2m = True
+            TargetValues.column = 2
+            TargetValues.row = 1
 
-        elif key_style["name"] == "setTgt":
-            setTgtInts()
-            setTgtF()
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", gridTgt + columnTgt)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", rowTgt)
+        elif key_style["name"] == "column0Top":
+            resetBools("9x9")
+            Buttons.c0t = True
+            TargetValues.column = 0
+            TargetValues.row = 0
 
-        elif key_style["name"] == "removeTgt":
-            setOthersFalse("tgt")
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
+        elif key_style["name"] == "column1Top":
+            resetBools("9x9")
+            Buttons.c1t = True
+            TargetValues.column = 1
+            TargetValues.row = 0
 
-        elif key_style["name"] == "fellLow":
-            setOthersFalse("tgt")
+        elif key_style["name"] == "column2Top":
+            resetBools("9x9")
+            Buttons.c2t = True
+            TargetValues.column = 2
+            TargetValues.row = 0
 
-        elif key_style["name"] == "madeShot":
-            NTValues.tgtColumnNT = ntproperty("/SmartDashboard/Target/Column", 999)
-            NTValues.tgtRowNT = ntproperty("/SmartDashboard/Target/Row", 999)
-            setOthersFalse("tgt")
-
-        elif key_style["name"] == "markGrid":
-            setTgtInts()
-            setOthersFalse("all")
-
-        elif key_style["name"] == "removeGridMark":
-            setTgtInts()
-            setOthersFalse("all")
-
-        #update key images
+        #update all key images
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
 
-def setupSD():
-    #MAKE ALL THE BOOLS
-    print("Placeholder")
-
+        #update networktables values
+        updateNT()
+ 
 if __name__ == "__main__":
     streamdecks = DeviceManager().enumerate()
 
@@ -479,7 +369,7 @@ if __name__ == "__main__":
             deck.deck_type(), deck.get_serial_number(), deck.get_firmware_version()
         ))
 
-        # Set initial screen brightness to 30%.
+        # Set initial screen brightness to 80%.
         deck.set_brightness(80)
 
         # Set initial key images.
