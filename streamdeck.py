@@ -20,6 +20,7 @@ class NTValues():
     tgtColumn = ntproperty("/Target/Column", 0)
     tgtRow = ntproperty("/Target/Row", 0)
 
+#for use as toggles instead of buttons
 class Buttons():
     g0 = False #grid 0 
     g1 = False #grid 1
@@ -34,7 +35,7 @@ class Buttons():
     c2m = False # column 2 mid
     c2t = False # column 2 top
 
-#indexes for all of the buttons
+#indexes for all of the buttons on the streamdeck
 class Indexes():
     #empty indexes: 1, 6, 11
 
@@ -185,6 +186,7 @@ def render_key_image(deck, icon_filename, font_filename, label_text):
 
 
 # Returns styling information for a key based on its position and state.
+# this is run everytime a key is pressed
 def get_key_style(deck, key, state):
 
     if key == Indexes.g0:
@@ -279,6 +281,7 @@ def key_change_callback(deck, key, state):
 
     #if any of the keys have been pressed
     if state:
+        #update images
         key_style = get_key_style(deck, key, state)
 
         #all the buttons toggle bool values
