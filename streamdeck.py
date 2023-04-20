@@ -14,6 +14,8 @@ ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 NetworkTables.initialize(server = "10.70.28.2")
 
 #target location ints for networktables
+#sets up ints in their own networtables page labled "Target"
+#default pose (0,0)
 class NTValues():
     tgtColumn = ntproperty("/Target/Column", 0)
     tgtRow = ntproperty("/Target/Row", 0)
@@ -50,7 +52,8 @@ class Indexes():
     c2l = 12 # column 2 low
 
 class TargetValues():
-    grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid (driver pov), added onto tgt column to get final column pose
+    grid = 0 #0 = left outer grid, 3 = co-op grid, 6 = right outer grid (driver pov)
+    #added onto tgt column to get final pose as a column
     column = 0 #0 = leftmost column, 1 = middle column, 2 = rightmost column (driver pov)
     row = 0 #2 = lowest row, 1 = middle row, 0 = highest row (field pov)
 
@@ -71,6 +74,7 @@ def getColumnValue(pose):
         return 0
     
 def resetBools(erase):
+    #reset button toggle bools to not selected
     if erase == "9x9":
         Indexes.c0l = False
         Indexes.c0m = False
@@ -87,6 +91,8 @@ def resetBools(erase):
         Indexes.g2 = False
 
 #return needed button image based on key and state
+#appears as one image when toggle selected and another when not
+#the "" is the image name
 def setImgs(icon):
     if icon == "grid0":
         if Buttons.g0:
@@ -234,7 +240,7 @@ def get_key_style(deck, key, state):
         name = "empty"
         icon = "{}.png".format("empty")
 
-    #set the test to empty
+    #set text on keys to blank
     font = "Roboto-Regular.ttf"
     label = ""
 
@@ -276,6 +282,7 @@ def key_change_callback(deck, key, state):
         key_style = get_key_style(deck, key, state)
 
         #all the buttons toggle bool values
+        #sets target values to which position is selected on the streamdeck
         if key_style["name"] == "grid0":
             resetBools("grid")
             Buttons.g0 = True
@@ -349,7 +356,7 @@ def key_change_callback(deck, key, state):
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
 
-        #update networktables values
+        #update networktables values if any key on the streamdeck is pressed
         updateNT()
  
 if __name__ == "__main__":
