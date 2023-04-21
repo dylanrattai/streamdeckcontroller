@@ -75,21 +75,22 @@ def getColumnValue(pose):
         return 0
     
 def resetBools(erase):
+
     #reset button toggle bools to not selected
     if erase == "9x9":
-        Indexes.c0l = False
-        Indexes.c0m = False
-        Indexes.c0t = False
-        Indexes.c1l = False
-        Indexes.c1m = False
-        Indexes.c1t = False
-        Indexes.c2l = False
-        Indexes.c2m = False
-        Indexes.c2t = False
+        Buttons.c0l = False
+        Buttons.c0m = False
+        Buttons.c0t = False
+        Buttons.c1l = False
+        Buttons.c1m = False
+        Buttons.c1t = False
+        Buttons.c2l = False
+        Buttons.c2m = False
+        Buttons.c2t = False
     elif erase == "grid":
-        Indexes.g0 = False
-        Indexes.g1 = False
-        Indexes.g2 = False
+        Buttons.g0 = False
+        Buttons.g1 = False
+        Buttons.g2 = False
 
 #return needed button image based on key and state
 #appears as one image when toggle selected and another when not
@@ -163,6 +164,12 @@ def setImgs(icon):
             
     elif icon == "column2Top":
         if Buttons.c2t:
+            return "column3Tgt"
+        else:
+            return "column3"
+        
+    elif icon == "column2Mid":
+        if Buttons.c2m:
             return "column3Tgt"
         else:
             return "column3"
@@ -272,9 +279,6 @@ def update_key_image(deck, key, state):
 # Prints key state change information, updates rhe key image and performs any
 # associated actions when a key is pressed.
 def key_change_callback(deck, key, state):
-
-    # Print new key state
-    print("Deck {} Key {} = {}".format(deck.id(), key, state), flush=True)
 
     # Update the key image based on the new key state.
     update_key_image(deck, key, state)
