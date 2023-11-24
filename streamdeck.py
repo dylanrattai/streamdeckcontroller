@@ -73,6 +73,8 @@ def resetBools():
 def setImgs(icon):
     if icon == "Bool Example" and b1:
         return "red"
+    else:
+        return "empty"
 
 # Generates a custom tile with run-time generated text and custom image via the
 # PIL module.
@@ -87,28 +89,34 @@ def render_key_image(deck, icon_filename, font_filename, label_text):
     # label onto the image a few pixels from the bottom of the key.
     draw = ImageDraw.Draw(icon)
     font = ImageFont.truetype(font_filename, 14)
-    draw.text((image.width / 2, image.height - 5), text=label_text, font=font, anchor="ms", fill="white")
+    #draw.text((image.width / 2, image.height - 5), text=label_text, font=font, anchor="ms", fill="white")
 
     return PILHelper.to_native_format(deck, image)
 
 
 # Returns styling information for a key based on its position and state.
-# this is run everytime a key is pressed
+# this is run everytime a key is pressed & released
 def get_key_style(deck, key, state):
 
-    if key == b1:
+    if key == ib1:
         name = "Bool Example"
         icon = "{}.png".format(setImgs(name))
         label = ""
 
-    elif key == b2:
+    elif key == ib2:
         name = "Counter"
-        label = sdv.getNumber("counter")
+        icon = "{}.png".format("empty")
+        try:
+            label = sdv.getNumber("counter", sdv.getNumber("counter"))
+        except:
+            print("Exception in get_key_style, key == b2")
+            label = sdv.getNumber("counter", 0)
 
     else:
         #any indexes not set will set the image as a blank png
         name = "empty"
         icon = "{}.png".format("empty")
+        label = ""
 
     #set text on keys to blank, uncomment the 2 lines under this if you dont want to use text labels, you can then remove label from the above if statements
     font = "Roboto-Regular.ttf"
@@ -146,6 +154,10 @@ def key_change_callback(deck, key, state):
 
     #if any of the keys have been pressed
     if state:
+        global b1
+
+        #update all key images
+        key_style = get_key_style(deck, key, state)
 
         #all the buttons toggle bool values
         #sets target values to which position is selected on the streamdeck
@@ -154,10 +166,10 @@ def key_change_callback(deck, key, state):
             sdv.putBoolean("boolExample", b1)
             
         elif key_style["name"] == "Counter":
-            sdv.putNumber("counter", sdv.getNumber("counter") + 1)
-
-        #update all key images
-        key_style = get_key_style(deck, key, state)
+            try:
+                sdv.putNumber("counter", sdv.getNumber("counter") + 1)
+            except:
+                print("Exception in key_change_callback, Counter")
 
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
