@@ -2,9 +2,9 @@
 
 ## Needs
 PIP Modules
-- streamdeck (streamdeck functionality)
+- streamdeck (Stream Deck functionality)
 - pillow (images)
-- pyntcore
+- pyntcore (networktables)
 
 Program (Needed for HID Interfacing)
 - [HIDAPI](https://github.com/libusb/hidapi)
