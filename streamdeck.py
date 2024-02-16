@@ -15,42 +15,30 @@ NetworkTables.initialize(server = "RIO IP ADDRESS ex: 10.70.28.2 or roborio-XXXX
 sd = NetworkTables.getTable("SmartDashboard") #interact w/ smartdashboard
 sdv = NetworkTables.getTable("Streamdeck") #make table for values to be changed from this script
 
-#bools for if the button is in a toggled state
-b1 = False 
-b2 = False
-b3 = False
-b4 = False
-b5 = False
-b6 = False
-b7 = False
-b8 = False
-b9 = False
-b10 = False
-b11 = False
-b12 = False
-b13 = False
-b14 = False
-b15 = False
+#bools for if the button is in a toggled state, make ButtonBools.get/set_b_value a int 1-15
+class ButtonBools:
+    def __init__(self):
+        self.b_values = [False] * 15
+
+    def set_b_value(self, index, value):
+        self.b_values[index - 1] = value
+    
+    def get_b_value(self, index):
+        return self.b_values[index - 1]
 
 #indexes for all of the buttons on the streamdeck
 #top left is index 0, bottom right is index 14
-ib1 = 0
-ib2 = 1
-ib3 = 2
-ib4 = 3
-ib5 = 4
-ib6 = 5
-ib7 = 6
-ib8 = 7
-ib9 = 8
-ib10 = 9
-ib11 = 10
-ib12 = 11
-ib13 = 12
-ib14 = 13
-ib15 = 14
+class ButtonIndexes:
+    def __init__(self):
+        self.values = turple(range(15))
+
+    def get_index(self, index):
+        if 1 <= index <= 15:
+            return self.values[index - 1]
+        else:
+            return ValueError("Requested invalid index")
     
-def resetBools():
+def reset_bools():
     b1 = False 
     b2 = False
     b3 = False
@@ -71,7 +59,7 @@ def resetBools():
 #the return is the image name
 #images should be 80px by 80px
 def setImgs(icon):
-    if icon == "Bool Example" and b1:
+    if icon == "Bool Example" and ButtonBools.get_b_value(1):
         return "red"
     else:
         return "empty"
@@ -98,12 +86,12 @@ def render_key_image(deck, icon_filename, font_filename, label_text):
 # this is run everytime a key is pressed & released
 def get_key_style(deck, key, state):
 
-    if key == ib1:
+    if key == ButtonIndexes.b1:
         name = "Bool Example"
         icon = "{}.png".format(setImgs(name))
         label = ""
 
-    elif key == ib2:
+    elif key == ButtonIndexes.b2:
         name = "Counter"
         icon = "{}.png".format("empty")
         try:
@@ -154,16 +142,14 @@ def key_change_callback(deck, key, state):
 
     #if any of the keys have been pressed
     if state:
-        global b1
 
         #update all key images
         key_style = get_key_style(deck, key, state)
 
         #all the buttons toggle bool values
-        #sets target values to which position is selected on the streamdeck
         if key_style["name"] == "Bool Example":
-            b1 = not b1
-            sdv.putBoolean("boolExample", b1)
+            ButtonBools.set_b_value(1, not ButtonBools.get_b_value(1))
+            sdv.putBoolean("boolExample", ButtonBools.get_b_value(1))
             
         elif key_style["name"] == "Counter":
             try:
