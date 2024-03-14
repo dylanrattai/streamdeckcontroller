@@ -6,12 +6,14 @@ from networktables.util import ntproperty
 from PIL import Image, ImageDraw, ImageFont
 from StreamDeck.DeviceManager import DeviceManager
 from StreamDeck.ImageHelpers import PILHelper
+from wpilib.shuffleboard import Shuffleboard
+from wpilib.shuffleboard import BuiltInWidgets
 
 #button images path
 ASSETS_PATH = os.path.join(os.path.dirname(__file__), "Assets")
 
 #networktables setup
-NetworkTables.initialize(server = "RIO IP ADDRESS ex: 10.70.28.2 or roborio-XXXX-frc.local")
+NetworkTables.initialize(server = "10.70.28.2")
 sd = NetworkTables.getTable("SmartDashboard") #interact w/ smartdashboard
 sdv = NetworkTables.getTable("Streamdeck") #make table for values to be changed from this script
 
@@ -40,6 +42,45 @@ class ButtonIndexes:
         
 buttonBools = ButtonBools()
 buttonIndexes = ButtonIndexes()
+
+# Create a function for targeting the speaker to be run when speaker button pressed
+def target_speaker():
+    # Set the speaker button as true and the amp one as false
+    buttonBools.set_b_value(1, True)
+    buttonBools.set_b_value(2, False)
+    # Set networktables values
+    sdv.putBoolean("speaker", True)
+    sdv.putBoolean("amp", False)
+    #update shuffleboard widgets
+    update_shuffleboard()
+
+# Create a function for targeting the amp to be run when amp button pressed
+def target_amp():
+    # Set the amp button as true and the speaker one as false
+    buttonBools.set_b_value(1, False)
+    buttonBools.set_b_value(2, True)
+    # Set networktables values
+    sdv.putBoolean("speaker", False)
+    sdv.putBoolean("amp", True)
+    #update shuffleboard widgets
+    update_shuffleboard()
+
+def update_shuffleboard():
+    #on the driver shuffleboard tab put a boolean box for what should be targeted
+    #based off networktables value
+    (Shuffleboard.getTab("Driver")
+   .add("Target Speaker", sdv.getBoolean("speaker"))
+   .withWidget(BuiltInWidgets.kBooleanBox)
+   .withSize(2, 2)
+   .withPosition(0, 0)
+   .getEntry())
+   
+    (Shuffleboard.getTab("Driver")
+   .add("Target Amp", sdv.getBoolean("amp"))
+   .withWidget(BuiltInWidgets.kBooleanBox)
+   .withSize(2, 2)
+   .withPosition(2, 0)
+   .getEntry())
     
 def reset_bools():
     buttonBools.set_b_value(1, False)
@@ -91,9 +132,14 @@ def get_key_style(deck, key, state):
 
     #set key info
     if key == buttonIndexes.get_index(1):
-        name = "Bool Example"
-        icon = "{}.png".format(setImgs(name))
-        label = ""
+        name = "Target Speaker"
+        icon = "{}.png".format("empty")
+        label = "Speaker"
+
+    elif key == buttonIndexes.get_index(2):
+        name = "Target Amp"
+        icon = "{}.png".format("empty")
+        label = "Amp"
 
     else:
         #any indexes not set will set the image as a blank png
@@ -142,10 +188,13 @@ def key_change_callback(deck, key, state):
         key_style = get_key_style(deck, key, state)
 
         #button 1 toggles bool values, add elifs to add keys here
-        if key_style["name"] == "Bool Example":
-            buttonBools.set_b_value(1, not buttonBools.get_b_value(1))
-            sdv.putBoolean("boolExample", buttonBools.get_b_value(1))
+        if key_style["name"] == "Target Speaker":
+            target_speaker()
 
+        elif key_style["name"] == "Target Amp":
+            target_amp()
+
+        #update all key images
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
  
