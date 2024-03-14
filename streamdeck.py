@@ -30,36 +30,39 @@ class ButtonBools:
 #top left is index 0, bottom right is index 14
 class ButtonIndexes:
     def __init__(self):
-        self.values = turple(range(15))
+        self.values = tuple(range(15))
 
     def get_index(self, index):
         if 1 <= index <= 15:
             return self.values[index - 1]
         else:
             return ValueError("Requested invalid index")
+        
+buttonBools = ButtonBools()
+buttonIndexes = ButtonIndexes()
     
 def reset_bools():
-    b1 = False 
-    b2 = False
-    b3 = False
-    b4 = False
-    b5 = False
-    b6 = False
-    b7 = False
-    b8 = False
-    b9 = False
-    b10 = False
-    b11 = False
-    b12 = False
-    b13 = False
-    b14 = False
-    b15 = False
+    buttonBools.set_b_value(1, False)
+    buttonBools.set_b_value(2, False)
+    buttonBools.set_b_value(3, False)
+    buttonBools.set_b_value(4, False)
+    buttonBools.set_b_value(5, False)
+    buttonBools.set_b_value(6, False)
+    buttonBools.set_b_value(7, False)
+    buttonBools.set_b_value(8, False)
+    buttonBools.set_b_value(9, False)
+    buttonBools.set_b_value(10, False)
+    buttonBools.set_b_value(11, False)
+    buttonBools.set_b_value(12, False)
+    buttonBools.set_b_value(13, False)
+    buttonBools.set_b_value(14, False)
+    buttonBools.set_b_value(15, False)
 
 #return needed button image based on key and state
 #the return is the image name
 #images should be 80px by 80px
 def setImgs(icon):
-    if icon == "Bool Example" and ButtonBools.get_b_value(1):
+    if icon == "Bool Example" and buttonBools.get_b_value(1):
         return "red"
     else:
         return "empty"
@@ -86,19 +89,11 @@ def render_key_image(deck, icon_filename, font_filename, label_text):
 # this is run everytime a key is pressed & released
 def get_key_style(deck, key, state):
 
-    if key == ButtonIndexes.b1:
+    #set key info
+    if key == buttonIndexes.get_index(1):
         name = "Bool Example"
         icon = "{}.png".format(setImgs(name))
         label = ""
-
-    elif key == ButtonIndexes.b2:
-        name = "Counter"
-        icon = "{}.png".format("empty")
-        try:
-            label = sdv.getNumber("counter", sdv.getNumber("counter"))
-        except:
-            print("Exception in get_key_style, key == b2")
-            label = sdv.getNumber("counter", 0)
 
     else:
         #any indexes not set will set the image as a blank png
@@ -146,16 +141,10 @@ def key_change_callback(deck, key, state):
         #update all key images
         key_style = get_key_style(deck, key, state)
 
-        #all the buttons toggle bool values
+        #button 1 toggles bool values, add elifs to add keys here
         if key_style["name"] == "Bool Example":
-            ButtonBools.set_b_value(1, not ButtonBools.get_b_value(1))
-            sdv.putBoolean("boolExample", ButtonBools.get_b_value(1))
-            
-        elif key_style["name"] == "Counter":
-            try:
-                sdv.putNumber("counter", sdv.getNumber("counter") + 1)
-            except:
-                print("Exception in key_change_callback, Counter")
+            buttonBools.set_b_value(1, not buttonBools.get_b_value(1))
+            sdv.putBoolean("boolExample", buttonBools.get_b_value(1))
 
         for key in range(deck.key_count()):
             update_key_image(deck, key, False)
